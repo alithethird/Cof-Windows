@@ -7,21 +7,48 @@
 #include <QFile>
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
-#include <QtCharts/QAreaSeries>
 
-void clicked();
+#include <QFileDialog>
 
-void read_json(const QJsonObject &json);
+QT_CHARTS_USE_NAMESPACE
+
 void write_json(const QJsonObject &json);
 
 void save_json(const QString &filepath);
+
+
+QVector<QVector<double>> mForces(2);
+QString strReply = "COF_Test_2021_03_22__07_54_55.json";
+QLineSeries *series = new QLineSeries();
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QObject::connect(ui->pushButton, &QPushButton::clicked, qApp, clicked);
+
+    for (int i = 0; i < 500; i++) {
+
+        *series << QPointF((qreal) i, (qreal) 0.00);
+    }
+    QPen pen(0x059605);
+    pen.setWidth(3);
+    series->setPen(pen);
+
+
+    chart->legend()->hide();
+    chart->addSeries(series);
+    chart->setTitle("aslşd");
+    chart->createDefaultAxes();
+
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setParent(ui->chartFrame);
+
+    axisX->setRange(0, 16);
+    axisX->setTickCount(11);
+    axisX->setLabelFormat("%.2f");
+    chartView->chart()->setAxisX(axisX, series);
+
 }
 
 MainWindow::~MainWindow()
@@ -29,12 +56,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-void clicked()
+void MainWindow::on_pushButtonSelectJson_clicked()
 {
-    QString result = "clicked";
-    qDebug() << result;
-    QString strReply = "COF_Test_2021_03_22__07_54_55.json";
+    strReply = QFileDialog::getOpenFileName(this, "Select a test Json");
+
+//    strReply = QFileDialog::getOpenFileName(this, "Select a test Json", "C://");
+}
+
+void MainWindow::on_pushButtonDraw_clicked()
+{
     QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
 
     QJsonObject responseObject = jsonResponse.object();
@@ -44,51 +74,230 @@ void clicked()
     QJsonParseError JsonParseError;
     QJsonDocument JsonDocument = QJsonDocument::fromJson(file.readAll(), &JsonParseError);
     file.close();
+
     QJsonObject RootObject = JsonDocument.object();
-    read_json(RootObject);/*
-    QString strOutput = "deneme.json";
-   //save_json(strReply);
-    QJsonDocument jsonOutput = QJsonDocument::fromJson(strOutput.toUtf8());
-    QJsonObject outputObject = jsonResponse.object();
-    write_json(outputObject);*/
+    read_json(RootObject);
+
 }
 
-void read_json(const QJsonObject &json)
+
+void MainWindow::read_json(const QJsonObject &json)
 {
     if (json.contains("Company Name:")&& json["Company Name:"].isString())
 {
         QString mName = json["Company Name:"].toString();
-        qDebug() << mName;
+        ui->labelCompanyNameText->setText(mName);
+        ui->labelCompanyName->setText("Company Name:");
+
 }
+    else
+    {
+        ui->labelCompanyName->setText(" ");
+        ui->labelCompanyNameText->hide();
+
+    }
+
+    if (json.contains("Operator Name:")&& json["Operator Name:"].isString())
+{
+        QString mName = json["Operator Name:"].toString();
+        ui->labelOperatorNameText->setText(mName);
+        ui->labelOperatorName->setText("Operator Name:");
+
+}
+    else
+    {
+        ui->labelOperatorName->setText(" ");
+        ui->labelOperatorNameText->hide();
+
+    }
+
+    if (json.contains("Testing Weight(gr):")&& json["Testing Weight(gr):"].isDouble())
+{
+        QString mName = json["Testing Weight(gr):"].toString();
+        ui->labelTestingWeightText->setText(mName);
+        ui->labelTestingWeight->setText("Testing Weight(gr):");
+
+}
+    else
+    {
+        ui->labelTestingWeight->setText(" ");
+        ui->labelTestingWeightText->hide();
+
+    }
+
+    if (json.contains("Test Mode:")&& json["Test Mode:"].isBool())
+{
+        QString mName = json["Test Mode:"].toString();
+        ui->labelTestModeText->setText(mName);
+        ui->labelTestMode->setText("Test Mode:");
+
+}
+    else
+    {
+        ui->labelTestMode->setText(" ");
+        ui->labelTestModeText->hide();
+
+    }
+
+    if (json.contains("Sample Name:")&& json["Sample Name:"].isString())
+{
+        QString mName = json["Sample Name:"].toString();
+        ui->labelSampleNameText->setText(mName);
+        ui->labelSampleName->setText("Sample Name:");
+
+}
+    else
+    {
+        ui->labelSampleName->setText(" ");
+        ui->labelSampleNameText->hide();
+
+    }
+
+    if (json.contains("Sample Width(mm):")&& json["Sample Width(mm):"].isDouble())
+{
+        QString mName = json["Sample Width(mm):"].toString();
+        ui->labelSampleWidthText->setText(mName);
+        ui->labelSampleWidth->setText("Sample Width(mm):");
+
+}
+    else
+    {
+        ui->labelSampleWidth->setText(" ");
+        ui->labelSampleWidthText->hide();
+
+    }
+
+    if (json.contains("Sample Height(mm):")&& json["Sample Height(mm):"].isDouble())
+{
+        QString mName = json["Sample Height(mm):"].toString();
+        ui->labelSampleHeightText->setText(mName);
+        ui->labelSampleHeight->setText("Sample Height(mm):");
+
+}
+    else
+    {
+        ui->labelSampleHeight->setText(" ");
+        ui->labelSampleHeightText->hide();
+
+    }
+
+    if (json.contains("Sample Age(months):")&& json["Sample Age(months):"].isDouble())
+{
+        QString mName = json["Sample Name(months):"].toString();
+        ui->labelSampleNameText->setText(mName);
+        ui->labelSampleName->setText("Sample Name(months):");
+
+}
+    else
+    {
+        ui->labelSampleName->setText(" ");
+        ui->labelSampleNameText->hide();
+
+    }
+
+    if (json.contains("Max Static Coefficient of Friction:")&& json["Max Static Coefficient of Friction:"].isDouble())
+{
+        QString mName = json["Max Static Coefficient of Friction:"].toString();
+        ui->labelMaxStaticCofText->setText(mName);
+        ui->labelMaxStaticCof->setText("Max Static Cof:");
+
+}
+    else
+    {
+        ui->labelMaxStaticCof->setText(" ");
+        ui->labelMaxStaticCofText->hide();
+
+    }
+
+    if (json.contains("Mean Static Coefficient of Friction:")&& json["Mean Static Coefficient of Friction:"].isDouble())
+{
+        QString mName = json["Mean Static Coefficient of Friction:"].toString();
+        ui->labelMeanStaticCofText->setText(mName);
+        ui->labelMeanStaticCof->setText("Mean Static Cof:");
+
+}
+    else
+    {
+        ui->labelMeanStaticCof->setText(" ");
+        ui->labelMeanStaticCofText->hide();
+
+    }
+
+    if (json.contains("Max Dynamic Coefficient of Friction:")&& json["Max Dynamic Coefficient of Friction:"].isDouble())
+{
+        QString mName = json["Max Dynamic Coefficient of Friction:"].toString();
+        ui->labelMaxDynamicCofText->setText(mName);
+        ui->labelMaxDynamicCof->setText("Max Dynamic Cof:");
+
+}
+    else
+    {
+        ui->labelMaxDynamicCof->setText(" ");
+        ui->labelMaxDynamicCofText->hide();
+
+    }
+
+    if (json.contains("Mean Dynamic Coefficient of Friction:")&& json["Mean Dynamic Coefficient of Friction:"].isDouble())
+{
+        QString mName = json["Mean Dynamic Coefficient of Friction:"].toString();
+        ui->labelMeanDynamicCofText->setText(mName);
+        ui->labelMeanDynamicCof->setText("Mean Dynamic Cof:");
+
+}
+    else
+    {
+        ui->labelMeanDynamicCof->setText(" ");
+        ui->labelMeanDynamicCofText->hide();
+
+    }
+    /*
+    if (json.contains("Sample Name:")&& json["Sample Name:"].isString())
+{
+        QString mName = json["Sample Name:"].toString();
+        ui->labelSampleNameText->setText(mName);
+        ui->labelSampleName->setText("Sample Name:");
+
+}
+    else
+    {
+        ui->labelSampleName->setText(" ");
+        ui->labelSampleNameText->hide();
+
+    }
+*/
+
 
     if (json.contains("Forces:") && json["Forces:"].isArray()) {
         QJsonArray levelArray = json["Forces:"].toArray();
-        //qDebug() << levelArray;
-        QVector<QVector<double>> mForces(2);
-        //mForces[0][1] = 12;
-        qDebug() << mForces.size();
-        mForces[0].resize(levelArray.size());
-        mForces[1].resize(levelArray.size());
-        qDebug() << mForces.size();
-        for (int levelIndex = 0; levelIndex < levelArray.size(); ++levelIndex) {
 
-            //QJsonObject levelObject = levelArray[levelIndex].toObject();
-            //mForces.append(levelArray[levelIndex].toDouble());
-            //mForces.append(levelArray[levelIndex].toArray());
-            mForces[0][levelIndex] = (levelArray[levelIndex].toArray().at(0).toDouble());
-           mForces[1][levelIndex] = (levelArray[levelIndex].toArray().at(1).toDouble());
-/*
-                QVector<double> a;
-                a.clear();
-            //mForces[0][levelIndex] = levelArray[levelIndex].toArray().at(0).toDouble();
-                qDebug() << levelArray[levelIndex].toArray().at(0).toDouble();
-                qDebug() << levelArray[levelIndex].toArray().at(1).toDouble();
-*/
+        series->clear();
+        series->setUseOpenGL(true);
+
+        for (int levelIndex = 0; levelIndex < levelArray.size(); ++levelIndex){
+            series->append( (qreal) levelArray[levelIndex].toArray().at(0).toDouble(), (qreal) levelArray[levelIndex].toArray().at(1).toDouble());
         }
-        qDebug() << mForces;
+        double a = levelArray[levelArray.size() -1].toArray().at(0).toDouble();
+        //double b = levelArray[levelArray.size() -1].toArray().at(1).toDouble(); //make a biggest function
+
+        double b = find_biggest(levelArray) * 1.1;
+
+        chart->axes(Qt::Horizontal).first()->setRange(0, a);
+        chart->axes(Qt::Vertical).first()->setRange(0, b);
     }
 }
 
+double MainWindow::find_biggest( const QJsonArray &json)
+{
+    double biggest = 0;
+    for (int i = 0; i < json.size(); ++i){
+        if (json[i].toArray().at(1).toDouble() > biggest)
+        {
+            biggest = json[i].toArray().at(1).toDouble();
+        }
+    }
+
+    return biggest;
+}
 
 
 // devamı data yazma
@@ -114,7 +323,6 @@ void write_json(const QJsonObject &json)
     recordObject.insert("Phone Numbers", phoneNumbersArray);
 
     QJsonDocument doc(recordObject);
-    qDebug() << doc.toJson();
 
 }
 void save_json(const QString &filepath)
@@ -134,3 +342,5 @@ void save_json(const QString &filepath)
     file.write(JsonDocument.toJson());
     file.close();
 }
+
+
